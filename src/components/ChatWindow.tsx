@@ -1,7 +1,7 @@
 "use client";
 
 import { ChatMessage, User } from "@/lib/types";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getSocket } from "@/lib/socket";
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 
 export default function ChatWindow({ user, messages, onSend }: Props) {
   const [text, setText] = useState("");
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   const send = () => {
     if (!text.trim()) return;
@@ -26,21 +27,25 @@ export default function ChatWindow({ user, messages, onSend }: Props) {
     setText("");
   };
 
+  // 🔽 Auto-scroll to bottom
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
-    <div className="flex-1 flex flex-col bg-[#0b141a]">
-      {/* Header */}
-      <div className="h-14 px-4 flex items-center border-b border-[#222d34] bg-[#111b21]">
+    <div className="flex-1 h-full bg-[#0b141a] flex flex-col">
+
+      {/* 🔒 FIXED HEADER */}
+      <div className="shrink-0 h-14 px-4 flex items-center border-b border-[#222d34] bg-[#111b21]">
         <h2 className="font-semibold text-sm">{user.name}</h2>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 px-6 py-4 overflow-y-auto space-y-3">
+      {/* 🔄 SCROLLABLE MESSAGES */}
+      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`flex ${
-              m.self ? "justify-end" : "justify-start"
-            }`}
+            className={`flex ${m.self ? "justify-end" : "justify-start"}`}
           >
             <div
               className={`max-w-[70%] px-4 py-2 text-sm leading-relaxed
@@ -54,10 +59,11 @@ export default function ChatWindow({ user, messages, onSend }: Props) {
             </div>
           </div>
         ))}
+        <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
-      <div className="h-16 px-4 flex items-center gap-3 bg-[#111b21] border-t border-[#222d34]">
+      {/* 🔒 FIXED INPUT */}
+      <div className="shrink-0 h-16 px-4 flex items-center gap-3 bg-[#111b21] border-t border-[#222d34]">
         <input
           className="flex-1 bg-[#202c33] text-sm px-4 py-2 rounded-full outline-none placeholder-gray-400"
           placeholder="Type a message"

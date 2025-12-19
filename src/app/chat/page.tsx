@@ -7,7 +7,6 @@ import { ChatMessage, User } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import UserList from "@/components/UserList";
 import ChatWindow from "@/components/ChatWindow";
-import TopBar from "@/components/TopBar";
 
 export default function ChatPage() {
   const router = useRouter();
@@ -57,29 +56,26 @@ export default function ChatPage() {
     );
   };
 
-  return (
-    <div className="h-screen flex flex-col">
-      <TopBar />
+return (
+  <div className="h-screen w-screen overflow-hidden flex">
+    <UserList
+      users={users}
+      selectedUser={selectedUser ?? undefined}
+      onSelect={selectUser}
+    />
 
-      <div className="flex flex-1">
-        <UserList
-          users={users}
-          selectedUser={selectedUser ?? undefined}
-          onSelect={selectUser}
-        />
-
-        {selectedUser ? (
-          <ChatWindow
-            user={selectedUser}
-            messages={messages}
-            onSend={(msg) => setMessages((prev) => [...prev, msg])}
-          />
-        ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-500">
-            Select a chat
-          </div>
-        )}
+    {selectedUser ? (
+      <ChatWindow
+        user={selectedUser}
+        messages={messages}
+        onSend={(msg) => setMessages((prev) => [...prev, msg])}
+      />
+    ) : (
+      <div className="flex-1 flex items-center justify-center text-gray-500">
+        Select a chat
       </div>
-    </div>
-  );
+    )}
+  </div>
+);
+
 }
