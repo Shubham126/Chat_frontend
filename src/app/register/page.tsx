@@ -1,26 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { api, setAuthToken } from "@/lib/api";
+import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const login = async () => {
-    const res = await api.post("/api/auth/login", { email, password });
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
-    setAuthToken(res.data.token);
-    router.push("/chat");
+  const register = async () => {
+    await api.post("/api/auth/register", { name, email, password });
+    router.push("/");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0b141a]">
       <div className="w-80 bg-[#111b21] p-6 rounded-xl shadow-lg space-y-4">
-        <h1 className="text-lg font-semibold text-center">Login</h1>
+        <h1 className="text-lg font-semibold text-center">Register</h1>
+
+        <input
+          className="w-full bg-[#202c33] px-4 py-2 rounded-full text-sm outline-none placeholder-gray-400"
+          placeholder="Name"
+          onChange={(e) => setName(e.target.value)}
+        />
 
         <input
           className="w-full bg-[#202c33] px-4 py-2 rounded-full text-sm outline-none placeholder-gray-400"
@@ -36,17 +40,17 @@ export default function LoginPage() {
         />
 
         <button
-          onClick={login}
+          onClick={register}
           className="w-full bg-[#005c4b] py-2 rounded-full text-sm font-medium"
         >
-          Login
+          Register
         </button>
 
         <p
-          onClick={() => router.push("/register")}
+          onClick={() => router.push("/")}
           className="text-center text-xs text-gray-400 cursor-pointer hover:text-gray-200"
         >
-          Create a new account
+          Already have an account? Login
         </p>
       </div>
     </div>
